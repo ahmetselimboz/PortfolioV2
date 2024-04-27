@@ -12,12 +12,14 @@ const config = require("./config/environments");
 var indexRouter = require("./routes/index");
 const Response = require("./lib/Response");
 const chalk = require("chalk");
+const cors = require('cors');
 
 
 
 
 var app = express();
 
+app.use(cors());
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
