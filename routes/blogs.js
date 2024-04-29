@@ -22,7 +22,7 @@ router.get("/:id", async function (req, res, next) {
     res.json(Response.successResponse({result,data}));
   } catch (error) {
     let errorResponse = Response.errorResponse(error);
-    res.status(errorResponse.code).json(Response.errorResponse(error));
+    res.status(error.statusCode).json(Response.errorResponse(error));
   }
 });
 
