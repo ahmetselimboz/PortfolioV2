@@ -17,9 +17,6 @@ const refSchema = new Schema(
       type: String,
       trim: true,
     },
-
-
-
     mainImg: {
       type: String,
       trim: true,
