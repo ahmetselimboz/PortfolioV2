@@ -56,7 +56,7 @@ router.post("/", async (req, res, next) => {
           req.body.sideImg,
           "Home_Side_Img.jpg"
         );
-
+        console.log(sideImg);
         options.sideImg = sideImg;
       }
 
