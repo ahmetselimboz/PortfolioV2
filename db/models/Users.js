@@ -3,9 +3,8 @@ const config = require("../../config/environments")
 
 const schema = mongoose.Schema(
   {
-    email: String,
+    username: String,
     password: String,
-    language: { type: String, default: config.DEFAULT_LANG },
   },
   { versionKey: false, timestamps: true }
 );
