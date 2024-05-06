@@ -14,7 +14,7 @@ router.post("/register", async function (req, res, next) {
     let user = await Users.findOne({username:username});
 
     if (user) {
-      return res.sendStatus(_enum.HTTP_CODES.NOT_ACCEPTABLE);
+      return res.status(_enum.HTTP_CODES.NOT_ACCEPTABLE).json({error: "Already this user exist!"});
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
@@ -27,7 +27,10 @@ router.post("/register", async function (req, res, next) {
     res
       .status(_enum.HTTP_CODES.CREATED)
       .json(Response.successResponse({ success: true, createdUser }));
-  } catch (error) {}
+  } catch (err) {
+    let errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
 });
 
 module.exports = router;
