@@ -6,7 +6,13 @@ var isBase64 = require("is-base64");
 const I18n = require("../lib/I18n");
 const _enum = require("../config/enum");
 const { base64ToImage } = require("../lib/Minio");
-const logger = require("../lib/logger/LoggerClass")
+const logger = require("../lib/logger/LoggerClass");
+const Auth = require("../lib/Auth")();
+
+router.all("*", Auth.authenticate(), (req, res, next) => {
+  next();
+});
+
 
 /* GET home page. */
 router.get("/", async function (req, res, next) {
