@@ -1,6 +1,7 @@
 module.exports = {
   PORT: process.env.PORT || "3000",
   LOG_LEVEL: process.env.LOG_LEVEL || "debug",
+  NODE_ENV: process.env.NODE_ENV || "debug",
   MONGODB_CONNECTION_STRING:
     process.env.MONGODB_CONNECTION_STRING ||
     "mongodb://127.0.0.1:27017/PortfolioV2",
@@ -28,4 +29,6 @@ module.exports = {
     process.env.MINIO_SECRET_KEY || "pdCmaCtZg5b24F7IhLMquTF1BcORCEBM1fBIVSb1",
 
   DOMAIN: process.env.DOMAIN || "http://localhost",
+
+  MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME || "mybucket",
 };

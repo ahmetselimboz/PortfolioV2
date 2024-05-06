@@ -13,7 +13,7 @@ var indexRouter = require("./routes/index");
 const Response = require("./lib/Response");
 const chalk = require("chalk");
 const cors = require('cors');
-
+const { bucketExists } = require("./lib/Minio");
 
 
 
@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-
+bucketExists();
 app.use('/api', indexRouter);
 
 //catch 404 and forward to error handler

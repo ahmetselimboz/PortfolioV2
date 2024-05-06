@@ -72,7 +72,7 @@ router.post("/", async (req, res, next) => {
       });
 
       if (result) {
-        res.json(Response.successResponse({result:"Updated!"}));
+        res.json(Response.successResponse({result}));
       } else {
         logger.error(req.user?.username, "Homepage", "Update", "Update Error!");
         throw new CustomError(
