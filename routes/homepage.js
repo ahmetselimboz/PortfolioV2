@@ -54,16 +54,16 @@ router.post("/", async (req, res, next) => {
       if (isBase64(req.body.sideImg, { allowMime: true })) {
         const sideImg = await base64ToImage(
           req.body.sideImg,
-          "Home_Side_Img.jpg"
+          "Home_Side_Img.jpeg"
         );
-        console.log(sideImg);
+
         options.sideImg = sideImg;
       }
 
       if (isBase64(req.body.profilImg, { allowMime: true })) {
         options.profilImg = await base64ToImage(
           req.body.profilImg,
-          "Home_profilImg.jpg"
+          "Home_profilImg.jpeg"
         );
       }
 
