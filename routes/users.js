@@ -32,7 +32,7 @@ router.post("/register", async function (req, res, next) {
       .json(Response.successResponse({ success: true }));
   } catch (err) {
     let errorResponse = Response.errorResponse(err);
-    res.status(errorResponse.code).json(errorResponse);
+    res.status(_enum.HTTP_CODES.INT_SERVER_ERROR).json(errorResponse);
   }
 });
 
@@ -70,7 +70,7 @@ router.post("/login", async (req, res, next) => {
     res.json(Response.successResponse({ token, user: userData }));
   } catch (error) {
     let errorResponse = Response.errorResponse(err);
-    res.status(errorResponse.code).json(errorResponse);
+    res.status(_enum.HTTP_CODES.INT_SERVER_ERROR).json(errorResponse);
   }
 });
 

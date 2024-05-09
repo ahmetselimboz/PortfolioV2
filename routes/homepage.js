@@ -9,9 +9,6 @@ const { base64ToImage } = require("../lib/Minio");
 const logger = require("../lib/logger/LoggerClass");
 const Auth = require("../lib/Auth")();
 
-router.all("*", Auth.authenticate(), (req, res, next) => {
-  next();
-});
 
 
 /* GET home page. */
@@ -21,9 +18,13 @@ router.get("/", async function (req, res, next) {
     res.json(Response.successResponse(result));
   } catch (error) {
     let errorResponse = Response.errorResponse(error);
-    res.status(errorResponse.code).json(Response.errorResponse(error));
+    res.status(_enum.HTTP_CODES.INT_SERVER_ERROR).json(Response.errorResponse(error));
   }
 });
+
+// router.all("*", Auth.authenticate(), (req, res, next) => {
+//   next();
+// });
 
 router.post("/", async (req, res, next) => {
   try {
@@ -91,7 +92,7 @@ router.post("/", async (req, res, next) => {
   } catch (error) {
     logger.error(req.user?.username, "Homepage", "Update", error);
     let errorResponse = Response.errorResponse(error);
-    res.status(errorResponse.code).json(Response.errorResponse(error));
+    res.status(_enum.HTTP_CODES.INT_SERVER_ERROR).json(Response.errorResponse(error));
   }
 });
 
