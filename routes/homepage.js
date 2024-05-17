@@ -7,14 +7,14 @@ const I18n = require("../lib/I18n");
 const _enum = require("../config/enum");
 const { base64ToImage } = require("../lib/Minio");
 const logger = require("../lib/logger/LoggerClass");
-const Auth = require("../lib/Auth")();
-
+const auth = require("../middlewares/checkToken");
 
 
 /* GET home page. */
 router.get("/", async function (req, res, next) {
   try {
     const result = await HomePage.findOne();
+    //console.log(req.user);
     res.json(Response.successResponse(result));
   } catch (error) {
     let errorResponse = Response.errorResponse(error);
@@ -22,9 +22,10 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-// router.all("*", Auth.authenticate(), (req, res, next) => {
-//   next();
-// });
+router.all("*", auth, (req, res, next) => {
+  next();
+});
+
 
 router.post("/", async (req, res, next) => {
   try {
@@ -73,6 +74,7 @@ router.post("/", async (req, res, next) => {
           "Home_profilImg.jpeg"
         );
       }
+  
 
       const result = await HomePage.findByIdAndUpdate(req.body.id, options, {
         new: true,
@@ -95,5 +97,10 @@ router.post("/", async (req, res, next) => {
     res.status(_enum.HTTP_CODES.INT_SERVER_ERROR).json(Response.errorResponse(error));
   }
 });
+
+
+router.get("/test-token", (req,res, next)=>{
+  res.status(200).json({success:true})
+})
 
 module.exports = router;

@@ -14,6 +14,8 @@ const Response = require("./lib/Response");
 const chalk = require("chalk");
 const cors = require('cors');
 const { bucketExists } = require("./lib/Minio");
+const passport = require('passport');
+const { jwtStrategy } = require('./lib/Auth');
 
 
 
@@ -32,6 +34,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 bucketExists();
 app.use('/api', indexRouter);
+app.use(passport.initialize());
+passport.use('jwt', jwtStrategy)
 
 //catch 404 and forward to error handler
 app.use(function (req, res, next) {

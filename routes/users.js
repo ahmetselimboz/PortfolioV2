@@ -47,18 +47,18 @@ router.post("/login", async (req, res, next) => {
         .json({ success: false, error: "User doesn't exist!" });
     }
 
-    const checkPassword = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const checkPassword = await bcrypt.compare(password, user.password);
 
-    if(!checkPassword){
-      return res.status(_enum.HTTP_CODES.UNAUTHORIZED).json({success:false, error: "Username or password is wrong!"})
+    if (!checkPassword) {
+      return res
+        .status(_enum.HTTP_CODES.NOT_ACCEPTABLE)
+        .json({ success: false, error: "Username or password is wrong!" });
     }
 
     let payload = {
       id: user._id,
-      exp: parseInt(Date.now() / 1000) * config.JWT.EXPIRE_TIME,
+      
+      exp: parseInt(Date.now() / 1000) + config.JWT.EXPIRE_TIME,
     };
 
     let token = jwt.encode(payload, config.JWT.SECRET);
