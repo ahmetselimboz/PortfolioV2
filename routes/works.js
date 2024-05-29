@@ -6,6 +6,7 @@ const logger = require("../lib/logger/LoggerClass");
 const _enum = require('../config/enum');
 const isBase64 = require("is-base64")
 const {base64ToImage, removeObject} = require("../lib/Minio")
+const auth = require("../middlewares/checkToken");
 
 router.get('/', async function(req, res, next) {
     try {
@@ -25,6 +26,10 @@ router.get('/:id', async function(req, res, next) {
        
         res.status(_enum.HTTP_CODES.INT_SERVER_ERROR).json(Response.errorResponse(error));
       }
+});
+
+router.all("*", auth, (req, res, next) => {
+  next();
 });
 
 router.post("/add-work", async (req,res,next)=>{

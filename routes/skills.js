@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const Skills = require("../db/models/Skills")
 const Response = require("../lib/Response");
+const auth = require("../middlewares/checkToken");
 
 router.get('/', async function(req, res, next) {
     try {
@@ -11,6 +12,10 @@ router.get('/', async function(req, res, next) {
       
         res.status(_enum.HTTP_CODES.INT_SERVER_ERROR).json(Response.errorResponse(error));
       }
+});
+
+router.all("*", auth, (req, res, next) => {
+  next();
 });
 
 router.post("/add-skill", async (req,res,next)=>{

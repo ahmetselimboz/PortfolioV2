@@ -6,6 +6,7 @@ const _enum = require("../config/enum");
 const isBase64 = require("is-base64");
 const { base64ToImage, removeObject } = require("../lib/Minio");
 const logger = require("../lib/logger/LoggerClass");
+const auth = require("../middlewares/checkToken");
 
 router.get("/", async function (req, res, next) {
   try {
@@ -31,6 +32,10 @@ router.get("/:id", async function (req, res, next) {
     let errorResponse = Response.errorResponse(error);
     res.status(error.statusCode).json(Response.errorResponse(error));
   }
+});
+
+router.all("*", auth, (req, res, next) => {
+  next();
 });
 
 router.post("/add-blog", async (req, res, next) => {
