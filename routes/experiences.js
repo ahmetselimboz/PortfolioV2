@@ -7,6 +7,7 @@ const isBase64 = require("is-base64");
 const { base64ToImage, removeObject } = require("../lib/Minio");
 const logger = require("../lib/logger/LoggerClass");
 const auth = require("../middlewares/checkToken");
+const slugify = require("slugify");
 
 router.get("/", async function (req, res, next) {
   try {
@@ -29,6 +30,8 @@ router.post("/add-experience", async (req, res, next) => {
     if (!req.body) {
       res.redirect("/homepage");
     } else {
+      const randomNumber = generateRandomSixDigitNumber()
+
       const exp = new Experiences();
 
       exp.name = req.body.name;
@@ -36,6 +39,7 @@ router.post("/add-experience", async (req, res, next) => {
       exp.date = req.body.date;
       exp.desc = req.body.desc;
       exp.lang = req.body.lang;
+      exp.slug = `${slug(req.body.name)}-${randomNumber}`;;
 
       if (isBase64(req.body.mainImg, { allowMime: true })) {
         exp.mainImg = await base64ToImage(
@@ -55,11 +59,11 @@ router.post("/add-experience", async (req, res, next) => {
   }
 });
 
-router.get("/delete-experience/:id", async (req, res, next) => {
+router.get("/delete-experience/:slug", async (req, res, next) => {
   try {
     if (!req.params) {
     } else {
-      const result = await Experiences.findByIdAndDelete(req.params.id);
+      const result = await Experiences.findOneAndDelete({slug:req.params.slug});
 
       removeObject("Exp_" + result?.name + ".jpeg");
 
@@ -108,6 +112,27 @@ router.post("/update-experience/:id", async (req,res,next)=>{
  
   }
 })
+
+
+const slug = (title) => {
+  const slugOptions = {
+    replacement: "-",
+    remove: undefined,
+    lower: true,
+    strict: false,
+    trim: true,
+  };
+
+  return slugify(title, slugOptions);
+};
+
+function generateRandomSixDigitNumber() {
+  return Math.floor(100000 + Math.random() * 900000);
+}
+
+function getLastSixCharacters(str) {
+  return str.slice(-6);
+}
 
 
 module.exports = router;
