@@ -30,6 +30,10 @@ const aboutSchema = new Schema(
     desc3:{
       type:String,
       trim:true
+    },
+    lang:{
+      type:String,
+      required: true
     }
   },
   { versionKey: "false", timestamps: true }

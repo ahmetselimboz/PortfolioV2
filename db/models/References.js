@@ -22,6 +22,10 @@ const refSchema = new Schema(
       trim: true,
       default: dataURI
     },
+    lang:{
+      type:String,
+      required: true
+    }
   },
   { versionKey: "false", timestamps: true }
 );

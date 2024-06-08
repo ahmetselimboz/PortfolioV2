@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const Response = require("../lib/Response");
 const config = require("../config/environments");
 const jwt = require("jwt-simple");
+const logger = require("../lib/logger/LoggerClass");
 
 var router = express.Router();
 
@@ -30,9 +31,11 @@ router.post("/register", async function (req, res, next) {
     res
       .status(_enum.HTTP_CODES.CREATED)
       .json(Response.successResponse({ success: true }));
-  } catch (err) {
-    let errorResponse = Response.errorResponse(err);
-    res.status(_enum.HTTP_CODES.INT_SERVER_ERROR).json(errorResponse);
+  } catch (error) {
+    logger.error(req.user?.username, "Register", "Add", error);
+    res
+      .status(_enum.HTTP_CODES.INT_SERVER_ERROR)
+      .json(Response.errorResponse(error));
   }
 });
 
@@ -57,7 +60,7 @@ router.post("/login", async (req, res, next) => {
 
     let payload = {
       id: user._id,
-      
+
       exp: parseInt(Date.now() / 1000) + config.JWT.EXPIRE_TIME,
     };
 
@@ -69,7 +72,6 @@ router.post("/login", async (req, res, next) => {
 
     res.json(Response.successResponse({ token, user: userData }));
   } catch (error) {
-    
     res.status(_enum.HTTP_CODES.INT_SERVER_ERROR).json(errorResponse);
   }
 });

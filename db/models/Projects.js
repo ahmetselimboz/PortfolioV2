@@ -27,7 +27,7 @@ const projectSchema = new Schema(
       trim: true,
     },
 
-    lang: {
+    tech: {
       type: String,
       trim: true,
     },
@@ -40,6 +40,14 @@ const projectSchema = new Schema(
     desc: {
       type: String,
       trim: true,
+    },
+    lang:{
+      type:String,
+      required: true
+    },
+    slug:{
+      type:String,
+      required: true
     },
   },
   { versionKey: "false", timestamps: true }

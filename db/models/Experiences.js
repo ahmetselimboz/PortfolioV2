@@ -24,6 +24,10 @@ const expSchema = new Schema(
       type: String,
       trim: true,
       default: dataURI
+    },
+    lang:{
+      type:String,
+      required: true
     }
 
     

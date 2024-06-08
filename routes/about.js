@@ -10,7 +10,7 @@ const auth = require("../middlewares/checkToken");
 
 router.get("/", async function (req, res, next) {
   try {
-    const result = await About.findOne();
+    const result = await About.findOne({lang:req.query.lang});
     res.json(Response.successResponse(result));
   } catch (error) {
     res
@@ -44,6 +44,8 @@ router.post("/", async (req, res, next) => {
         sideImg1: req.body.sideImg1,
         sideImg2: req.body.sideImg2,
         sideImg3: req.body.sideImg3,
+        lang: req.body.lang,
+      
       };
 
       if (isBase64(req.body.mainImg, { allowMime: true })) {

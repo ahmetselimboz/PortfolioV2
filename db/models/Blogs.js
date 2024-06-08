@@ -37,6 +37,15 @@ const blogSchema = new Schema(
       trim: true,
       required: true,
     },
+    
+    lang:{
+      type:String,
+      required: true
+    },
+    slug:{
+      type:String,
+      required: true
+    }
   },
   { versionKey: "false", timestamps: true }
 );

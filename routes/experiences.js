@@ -10,7 +10,7 @@ const auth = require("../middlewares/checkToken");
 
 router.get("/", async function (req, res, next) {
   try {
-    const result = await Experiences.find();
+    const result = await Experiences.find({lang:req.query.lang});
 
     res.json(Response.successResponse(result));
   } catch (error) {
@@ -35,6 +35,7 @@ router.post("/add-experience", async (req, res, next) => {
       exp.tag = req.body.tag;
       exp.date = req.body.date;
       exp.desc = req.body.desc;
+      exp.lang = req.body.lang;
 
       if (isBase64(req.body.mainImg, { allowMime: true })) {
         exp.mainImg = await base64ToImage(
@@ -87,6 +88,7 @@ router.post("/update-experience/:id", async (req,res,next)=>{
         date: req.body.date,
         desc: req.body.desc,
         mainImg: req.body.mainImg,
+        lang: req.body.lang,
       };
       
       if (isBase64(req.body.mainImg, { allowMime: true })) {

@@ -13,7 +13,7 @@ const auth = require("../middlewares/checkToken");
 /* GET home page. */
 router.get("/", async function (req, res, next) {
   try {
-    const result = await HomePage.findOne();
+    const result = await HomePage.findOne({lang:req.query.lang});
     //console.log(req.user);
     res.json(Response.successResponse(result));
   } catch (error) {
@@ -37,6 +37,7 @@ router.post("/", async (req, res, next) => {
       );
     } else {
       var options = {
+        lang: req.body.lang,
         sideImg: req.body.sideImg,
         profilImg: req.body.profilImg,
 

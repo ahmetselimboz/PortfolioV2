@@ -7,10 +7,11 @@ const _enum = require('../config/enum');
 const isBase64 = require("is-base64")
 const {base64ToImage, removeObject} = require("../lib/Minio")
 const auth = require("../middlewares/checkToken");
+const slugify = require("slugify");
 
 router.get('/', async function(req, res, next) {
     try {
-        const result = await Work.find();
+        const result = await Work.find({lang:req.query.lang});
         res.json(Response.successResponse(result));
       } catch (error) {
     
@@ -18,9 +19,12 @@ router.get('/', async function(req, res, next) {
       }
 });
 
-router.get('/:id', async function(req, res, next) {
+router.get('/:slug', async function(req, res, next) {
     try {
-        const result = await Work.findById(req.params.id);
+        const result = await Work.findOne({
+          slug: { $regex: `${req.params.slug}$`, $options: "i" },
+          lang: req.query.lang,
+        });
         res.json(Response.successResponse(result));
       } catch (error) {
        
@@ -50,16 +54,33 @@ router.post("/add-work", async (req,res,next)=>{
           "Work_" + req.body.name + ".jpeg"
         );
       }
+      const randomNumber = generateRandomSixDigitNumber();
   
       project.tag = req.body.tag;
       project.name = req.body.name;
       project.text = req.body.text;
       project.date = req.body.date;
-      project.lang = req.body.lang;
+      project.tech = req.body.tech;
       project.link = req.body.link;
       project.desc = req.body.desc;
+      project.lang = req.body.lang;
+      project.slug = `${slug(req.body.name)}-${randomNumber}`;
   
       project.save();
+
+      const projects = new Work();
+      projects.mainImg =  project.mainImg
+      projects.tag = req.body.tag;
+      projects.name = "example";
+      projects.text = "example";
+      projects.date = "example";
+      projects.tech = "example";
+      projects.link = "example.com";
+      projects.desc = "example";
+      projects.lang = req.body.lang == "TR" ? "EN" : "TR";
+      projects.slug = `${slug("example")}-${randomNumber}`;
+  
+      await projects.save();
 
       res.json(Response.successResponse({success:true}));
     }
@@ -70,11 +91,12 @@ router.post("/add-work", async (req,res,next)=>{
 })
 
 
-router.get("/delete-work/:id", async (req,res,next)=>{
+router.get("/delete-work/:slug", async (req,res,next)=>{
   try {
     if (!req.params) {
     } else {
-      const result = await Work.findByIdAndDelete(req.params.id);
+      const result = await Work.deleteMany({
+        slug: { $regex: `${getLastSixCharacters(req.params.slug)}$`, $options: "i" }});
       
       removeObject("Work_"+result?.name+".jpeg");
 
@@ -88,7 +110,7 @@ router.get("/delete-work/:id", async (req,res,next)=>{
 })
 
 
-router.post("/update-work/:id", async (req,res,next)=>{
+router.post("/update-work/:slug", async (req,res,next)=>{
   try {
     if (!req.body) {
       logger.error(req.user?.username, "Works", "Update", "req.body doesn't exist!");
@@ -103,9 +125,13 @@ router.post("/update-work/:id", async (req,res,next)=>{
         name: req.body.name,
         text: req.body.text,
         date: req.body.date,
-        lang: req.body.lang,
+        tech: req.body.tech,
         link: req.body.link,
         desc: req.body.desc,
+        lang: req.body.lang,
+        slug: `${slug(req.body.name)}-${getLastSixCharacters(
+          req.params.slug
+        )}`,
       };
   
       if (isBase64(req.body.mainImg, { allowMime: true })) {
@@ -115,7 +141,7 @@ router.post("/update-work/:id", async (req,res,next)=>{
         );
       }
   
-      const data = await Work.findByIdAndUpdate(req.body.id, options, {new:true});
+      const data = await Work.findOneAndUpdate({ slug: req.params.slug }, options, {new:true});
       res.json(Response.successResponse({data:data}));
     }
   } catch (error) {
@@ -124,5 +150,26 @@ router.post("/update-work/:id", async (req,res,next)=>{
  
   }
 })
+
+
+const slug = (title) => {
+  const slugOptions = {
+    replacement: "-",
+    remove: undefined,
+    lower: true,
+    strict: false,
+    trim: true,
+  };
+
+  return slugify(title, slugOptions);
+};
+
+function generateRandomSixDigitNumber() {
+  return Math.floor(100000 + Math.random() * 900000);
+}
+
+function getLastSixCharacters(str) {
+  return str.slice(-6);
+}
 
 module.exports = router;

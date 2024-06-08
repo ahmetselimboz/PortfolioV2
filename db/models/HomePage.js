@@ -59,6 +59,10 @@ const homeSchema = new Schema(
         type: String,
         trim: true,
       },
+    },
+    lang:{
+      type:String,
+      required: true
     }
   },
   { versionKey: "false", timestamps: true }
