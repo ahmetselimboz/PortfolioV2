@@ -28,6 +28,10 @@ const expSchema = new Schema(
     lang:{
       type:String,
       required: true
+    },
+    slug:{
+      type:String,
+      required: true
     }
 
     
