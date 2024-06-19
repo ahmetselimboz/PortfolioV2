@@ -8,6 +8,8 @@ const { base64ToImage, removeObject } = require("../lib/Minio");
 const logger = require("../lib/logger/LoggerClass");
 const auth = require("../middlewares/checkToken");
 const slugify = require("slugify");
+const Subs = require("../db/models/Subscribers");
+const mail = require("../lib/SendMail");
 
 router.get("/", async function (req, res, next) {
   try {
@@ -25,12 +27,14 @@ router.get("/:slug", async function (req, res, next) {
     const result = await Blogs.findOne({
       slug: { $regex: `${req.params.slug}$`, $options: "i" },
       lang: req.query.lang,
+      show: true,
     });
 
     const regex = new RegExp(req.params.slug + "$");
     var data = await Blogs.find({
       slug: { $not: regex },
       lang: req.query.lang,
+      show: true,
     })
       .limit(6)
       .select("mainImg tags title desc slug lang");
@@ -77,6 +81,7 @@ router.post("/add-blog", async (req, res, next) => {
       blog.lang = req.body.lang;
       blog.slug = `${slug(req.body.title)}-${randomNumber}`;
       blog.tags = req.body.tags.map((tag) => ({ tagName: tag }));
+      blogs.show = false;
       blog.save();
 
       const blogs = new Blogs();
@@ -87,6 +92,7 @@ router.post("/add-blog", async (req, res, next) => {
       blogs.lang = req.body.lang == "TR" ? "EN" : "TR";
       blogs.slug = `${slug("example")}-${randomNumber}`;
       blogs.tags = req.body.tags.map((tag) => ({ tagName: tag }));
+      blogs.show = false;
       await blogs.save();
 
       res.json(Response.successResponse({ success: true }));
@@ -108,7 +114,11 @@ router.get("/delete-blog/:slug", async (req, res, next) => {
         .json({ success: false, error: "req.params doesn't exist!" });
     } else {
       const result = await Blogs.deleteMany({
-        slug: { $regex: `${getLastSixCharacters(req.params.slug)}$`, $options: "i" }});
+        slug: {
+          $regex: `${getLastSixCharacters(req.params.slug)}$`,
+          $options: "i",
+        },
+      });
       removeObject("Ref_" + result.name + ".jpeg");
 
       res.json(Response.successResponse({ success: true }));
@@ -162,6 +172,35 @@ router.post("/update-blog/:slug", async (req, res, next) => {
       .status(_enum.HTTP_CODES.INT_SERVER_ERROR)
       .json(Response.errorResponse(error));
   }
+});
+
+router.post("/show", async (req, res, next) => {
+  try {
+    await Blogs.updateMany(
+      { slug: { $regex: `${req.body.slug}$`, $options: "i" } },
+      { show: !req.body.show }
+    );
+
+    res.json(Response.successResponse({ success: true }));
+  } catch (error) {
+    logger.error(req.user?.username, "Blogs", "Show", error);
+    res
+      .status(_enum.HTTP_CODES.INT_SERVER_ERROR)
+      .json(Response.errorResponse(error));
+  }
+});
+
+router.post("/notify", async (req, res, next) => {
+  try {
+    const subs = await Subs.find({});
+    let emailArray = [];
+    for (let index = 0; index < subs.length; index++) {
+      emailArray.push(subs[index].email);
+    }
+
+    await mail(req.body.msg, emailArray);
+    res.json(Response.successResponse({ success: true }));
+  } catch (error) {}
 });
 
 const slug = (title) => {

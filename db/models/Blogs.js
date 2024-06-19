@@ -45,6 +45,10 @@ const blogSchema = new Schema(
     slug:{
       type:String,
       required: true
+    },
+    show:{
+      type:Boolean,
+      default: false
     }
   },
   { versionKey: "false", timestamps: true }
