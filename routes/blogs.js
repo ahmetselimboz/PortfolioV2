@@ -35,8 +35,8 @@ router.get("/:slug", async function (req, res, next) {
       slug: { $not: regex },
       lang: req.query.lang,
       show: true,
-    })
-      .limit(6)
+    }).sort({ createdAt: 'desc' })
+      .limit(3)
       .select("mainImg tags title desc slug lang");
 
     res.json(Response.successResponse({ result, data }));
