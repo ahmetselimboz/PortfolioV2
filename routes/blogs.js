@@ -63,40 +63,47 @@ router.post("/add-blog", async (req, res, next) => {
       return res
         .status(_enum.HTTP_CODES.NOT_ACCEPTABLE)
         .json({ success: false, error: "req.body doesn't exist!" });
+    } 
+
+    const blog = new Blogs();
+    console.log(req.body);
+    
+    if (isBase64(req.body.mainImg, { allowMime: true })) {
+      console.log("Merhaba");
+      blog.mainImg = await base64ToImage(
+        req.body.mainImg,
+        "Blog_" + req.body.title.substring(0, 8) + ".jpeg"
+      );
     } else {
-      const blog = new Blogs();
-
-      if (isBase64(req.body.mainImg, { allowMime: true })) {
-        blog.mainImg = await base64ToImage(
-          req.body.mainImg,
-          "Blog_" + req.body.title.substring(0, 8) + ".jpeg"
-        );
-      }
-      const randomNumber = generateRandomSixDigitNumber();
-
       blog.mainImg = req.body.mainImg;
-      blog.title = req.body.title;
-      blog.desc = req.body.desc;
-      blog.content = req.body.content;
-      blog.lang = req.body.lang;
-      blog.slug = `${slug(req.body.title)}-${randomNumber}`;
-      blog.tags = req.body.tags.map((tag) => ({ tagName: tag }));
-      blogs.show = false;
-      blog.save();
-
-      const blogs = new Blogs();
-      blogs.mainImg = blog.mainImg;
-      blogs.title = "example";
-      blogs.desc = "example";
-      blogs.content = "example";
-      blogs.lang = req.body.lang == "TR" ? "EN" : "TR";
-      blogs.slug = `${slug("example")}-${randomNumber}`;
-      blogs.tags = req.body.tags.map((tag) => ({ tagName: tag }));
-      blogs.show = false;
-      await blogs.save();
-
-      res.json(Response.successResponse({ success: true }));
     }
+    
+    const randomNumber = generateRandomSixDigitNumber();
+    blog.title = req.body.title;
+    blog.desc = req.body.desc;
+    blog.content = req.body.content;
+    blog.lang = req.body.lang;
+    blog.slug = `${slug(req.body.title)}-${randomNumber}`;
+    blog.tags = req.body.tags.map((tag) => ({ tagName: tag }));
+    blog.show = false;
+    
+    // İlk blog'u kaydet
+    await blog.save();
+
+    // İkinci blog'u oluştur ve kaydet
+    const translatedBlog = new Blogs();
+    translatedBlog.mainImg = blog.mainImg;
+    translatedBlog.title = "example";
+    translatedBlog.desc = "example";
+    translatedBlog.content = "example";
+    translatedBlog.lang = req.body.lang === "TR" ? "EN" : "TR";
+    translatedBlog.slug = `${slug("example")}-${randomNumber}`;
+    translatedBlog.tags = req.body.tags.map((tag) => ({ tagName: tag }));
+    translatedBlog.show = false;
+    
+    await translatedBlog.save();
+
+    res.json(Response.successResponse({ success: true }));
   } catch (error) {
     console.log(error);
     logger.error(req.user?.username, "Blog", "Add", error);
@@ -105,6 +112,7 @@ router.post("/add-blog", async (req, res, next) => {
       .json(Response.errorResponse(error));
   }
 });
+
 
 router.get("/delete-blog/:slug", async (req, res, next) => {
   try {
