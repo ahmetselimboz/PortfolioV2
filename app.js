@@ -15,6 +15,8 @@ const { bucketExists } = require("./lib/Minio");
 const passport = require('passport');
 const { jwtStrategy } = require('./lib/Auth');
 
+var app = express();
+
 console.log('ALLOWED_DOMAINS:', process.env.ALLOWED_DOMAINS);
 
 if (!process.env.ALLOWED_DOMAINS) {
@@ -45,7 +47,7 @@ const corsOptions = {
   },
 };
 
-var app = express();
+
 
 app.use(cors(corsOptions));
 
