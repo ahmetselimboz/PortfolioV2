@@ -22,7 +22,7 @@ const allowedIP = process.env.ALLOWED_IP;
 
 app.use((req, res, next) => {
   const clientIP = req.ip;
-
+  console.log("req.ip: ", req.ip)
   if (clientIP === allowedIP) {
     next();
   } else {
@@ -32,6 +32,7 @@ app.use((req, res, next) => {
 
 const corsOptions = {
   origin: (origin, callback) => {
+    console.log("origin: ", origin)
     if (!origin || allowedDomains.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
