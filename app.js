@@ -16,31 +16,12 @@ const passport = require('passport');
 const { jwtStrategy } = require('./lib/Auth');
 
 var app = express();
-app.set('trust proxy', true);
-console.log('ALLOWED_DOMAINS:', process.env.ALLOWED_DOMAINS);
-
-if (!process.env.ALLOWED_DOMAINS) {
-  throw new Error('ALLOWED_DOMAINS environment variable is not defined.');
-}
 
 const allowedDomains = process.env.ALLOWED_DOMAINS.split(',');
-const allowedIP = process.env.ALLOWED_IP;
-
-app.use((req, res, next) => {
-  const clientIP = req.ip;
-  const clientIPP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  console.log("Client IP: ", clientIPP);
-  console.log("req.ip: ", req.ip)
-  if (clientIP === allowedIP) {
-    next();
-  } else {
-    res.status(403).send('Unauthorized');
-  }
-});
 
 const corsOptions = {
   origin: (origin, callback) => {
-    console.log("origin: ", origin)
+   
     if (origin !== undefined || allowedDomains.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -49,10 +30,7 @@ const corsOptions = {
   },
 };
 
-
-
 app.use(cors(corsOptions));
-
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
