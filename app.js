@@ -16,7 +16,7 @@ const passport = require('passport');
 const { jwtStrategy } = require('./lib/Auth');
 
 var app = express();
-
+app.set('trust proxy', true);
 console.log('ALLOWED_DOMAINS:', process.env.ALLOWED_DOMAINS);
 
 if (!process.env.ALLOWED_DOMAINS) {
@@ -42,7 +42,7 @@ const corsOptions = {
     if (origin !== undefined || allowedDomains.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      res.status(403).send('Unauthorized');
     }
   },
 };
