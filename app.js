@@ -17,14 +17,43 @@ const { bucketExists } = require("./lib/Minio");
 const passport = require('passport');
 const { jwtStrategy } = require('./lib/Auth');
 
-var corsOptions = {
-  origin: process.env.CLIENT_URL,
-  optionsSuccessStatus: 200 
-}
+const allowedDomains = process.env.ALLOWED_DOMAINS.split(',');
+const allowedIP = process.env.ALLOWED_IP;
+
+app.use((req, res, next) => {
+  const clientIP = req.ip;
+
+  if (clientIP === allowedIP) {
+    next();
+  } else {
+    res.status(403).send('Unauthorized');
+  }
+});
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedDomains.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
 
 var app = express();
 
 app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const allowedDomains = process.env.ALLOWED_DOMAINS.split(',');
+
+  if (allowedDomains.includes(origin)) {
+    next();
+  } else {
+    res.status(403).send('Unauthorized');
+  }
+});
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
