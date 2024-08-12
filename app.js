@@ -15,6 +15,12 @@ const { bucketExists } = require("./lib/Minio");
 const passport = require('passport');
 const { jwtStrategy } = require('./lib/Auth');
 
+console.log('ALLOWED_DOMAINS:', process.env.ALLOWED_DOMAINS);
+
+if (!process.env.ALLOWED_DOMAINS) {
+  throw new Error('ALLOWED_DOMAINS environment variable is not defined.');
+}
+
 const allowedDomains = process.env.ALLOWED_DOMAINS.split(',');
 const allowedIP = process.env.ALLOWED_IP;
 
