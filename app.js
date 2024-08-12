@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 const corsOptions = {
   origin: (origin, callback) => {
     console.log("origin: ", origin)
-    if (!origin || allowedDomains.indexOf(origin) !== -1) {
+    if (origin !== undefined || allowedDomains.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
