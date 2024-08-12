@@ -17,11 +17,14 @@ const { bucketExists } = require("./lib/Minio");
 const passport = require('passport');
 const { jwtStrategy } = require('./lib/Auth');
 
-
+var corsOptions = {
+  origin: process.env.CLIENT_URL,
+  optionsSuccessStatus: 200 
+}
 
 var app = express();
 
-app.use(cors());
+app.use(cors(corsOptions));
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
