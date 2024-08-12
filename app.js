@@ -28,6 +28,8 @@ const allowedIP = process.env.ALLOWED_IP;
 
 app.use((req, res, next) => {
   const clientIP = req.ip;
+  const clientIPP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  console.log("Client IP: ", clientIPP);
   console.log("req.ip: ", req.ip)
   if (clientIP === allowedIP) {
     next();
@@ -42,7 +44,7 @@ const corsOptions = {
     if (origin !== undefined || allowedDomains.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      res.status(403).send('Unauthorized');
+      callback(new Error('Not allowed by CORS'));
     }
   },
 };
