@@ -44,16 +44,7 @@ var app = express();
 
 app.use(cors(corsOptions));
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  const allowedDomains = process.env.ALLOWED_DOMAINS.split(',');
 
-  if (allowedDomains.includes(origin)) {
-    next();
-  } else {
-    res.status(403).send('Unauthorized');
-  }
-});
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
