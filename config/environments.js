@@ -31,4 +31,8 @@ module.exports = {
   DOMAIN: process.env.DOMAIN || "http://localhost",
 
   MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME || "mybucket",
+
+  CORS_ENABLED: process.env.CORS_ENABLED || "false",
+  
+  ALLOWED_DOMAINS: process.env.ALLOWED_DOMAINS
 };

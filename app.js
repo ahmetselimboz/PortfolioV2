@@ -14,21 +14,38 @@ const cors = require('cors');
 const { bucketExists } = require("./lib/Minio");
 const passport = require('passport');
 const { jwtStrategy } = require('./lib/Auth');
-
+const { CORS_ENABLED, ALLOWED_DOMAINS } = require("./config/environments");
 var app = express();
 
-const allowedDomains = process.env.ALLOWED_DOMAINS.split(',');
+console.log("🚀 ~ CORS_ENABLED:", CORS_ENABLED)
 
-const corsOptions = {
-  origin: (origin, callback) => {
-   
-    if (origin !== undefined || allowedDomains.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-};
+if (CORS_ENABLED === "true") {
+  const allowedDomains = ALLOWED_DOMAINS.split(",");
+
+  const corsOptions = {
+    origin: (origin, callback) => {
+      console.log("🚀 ~ origin:", origin);
+      console.log("🚀 ~ allowedDomains.includes(origin):", allowedDomains.includes(origin));
+      if (!origin || allowedDomains.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("🚀 ~ CORS:", "Not allowed by CORS");
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  };
+
+  app.use(cors(corsOptions));
+} else {
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    })
+  );
+}
+
 
 app.use(cors(corsOptions));
 
