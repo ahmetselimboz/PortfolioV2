@@ -47,7 +47,7 @@ if (CORS_ENABLED === "true") {
 }
 
 
-app.use(cors(corsOptions));
+
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
